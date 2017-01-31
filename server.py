@@ -7,7 +7,7 @@ from Crypto.PublicKey import RSA
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #Bind server address to port
-server_address = ('10.1.1.173', 8000)
+server_address = ('127.0.0.1', 8000)
 print >> sys.stderr, 'starting up on %s port %s' % server_address
 sock.bind(server_address)
 

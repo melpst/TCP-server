@@ -1,5 +1,7 @@
 import socket
 import sys
+import time
+from Crypto.PublicKey import RSA
 
 #Create TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,18 +19,19 @@ while True:
     connection, client_address = sock.accept()
 
     try:
-	print sys.stderr, 'connection from', client_address
+        print sys.stderr, 'connection from', client_address
 
-        #Receive the data in small chunk and retranmit it
-        while True:
-            connection.setblocking(0)
-            data = connection.recv(16)
-            if data:
-                print >> sys.stderr, 'sending data back to the client'
-                connection.sendall(data)
-            else:
-                print >>sys.stderr, 'no more data from', client_address
-                break
+        key = open('../.ssh/id_rsa.pub', 'rb').read()
+        publicKey = RSA.importKey(key)
+
+        message = 'asdfghjkl;\'qwertyuiop[]zxcvbnm,./1234567890-='
+        cipher = publicKey.encrypt(message, 32)[0]
+        print cipher
+        connection.sendall(cipher)
+
+        decrypted_message = connection.recv(2048)
+        print "decrypted message is %s" % decrypted_message
+
     finally:
         #Clean up the connection
         connection.close()
